@@ -43,6 +43,7 @@ also :class:`~.middleware.LogSetupMiddleware`.
 
 
 import hashlib
+import uuid
 
 
 class RequestFilter(object):
@@ -75,6 +76,7 @@ class RequestFilter(object):
     def __init__(self, request=None):
         """Saves *request* (a WSGIRequest object) for later."""
         self.request = request
+        self.request_uuid = str(uuid.uuid4())
 
     def filter(self, record):
         """
@@ -102,6 +104,9 @@ class RequestFilter(object):
             record.session_id_hashed = hashlib.sha1(record.session_id.encode('utf-8')).hexdigest()[:7]
         else:
             record.session_id_hashed = '-'
+
+        record.request_uuid = self.request_uuid
+
         # Headers
         META = getattr(request, 'META', {})
         record.remote_addr = META.get('REMOTE_ADDR', '-')
