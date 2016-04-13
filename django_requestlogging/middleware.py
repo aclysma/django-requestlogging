@@ -161,9 +161,12 @@ class LogSetupMiddleware(object):
         for handler in self.find_handlers_with_filter(type(f)):
             handler.removeFilter(f)
 
+    def create_filter(self, request):
+        return RequestFilter(request)
+
     def process_request(self, request):
         """Adds a filter, bound to *request*, to the appropriate loggers."""
-        request.logging_filter = RequestFilter(request)
+        request.logging_filter = self.create_filter(request)
         self.add_filter(request.logging_filter)
 
     def process_response(self, request, response):
